@@ -57,7 +57,7 @@ void setup() {
 
     threshold = getStoredThresholdDistance();
 
-    if (threshold < 0) {
+    if (threshold < 1) {
         //probably bad config, load default
         threshold = defaultThreshold;
     }
@@ -167,10 +167,19 @@ void handleConsole() {
         } else if (data == F("threshold set")) {
             
             Serial.print(F("Enter threshold value in cm: "));
-            String newThresholdString = Serial.readStringUntil("\n");
-            int newThreshold =  atoi( newThresholdString.c_str() );
+            //String newThresholdString = Serial.readStringUntil("\n");
+            //int newThreshold =  atoi( newThresholdString.c_str() );
+            while(!Serial.available()){
+                delay(20); //wait for input
+            }
+            int newThreshold = Serial.parseInt();
             
             setThresholdDistance(newThreshold);
+            Serial.println();
+            Serial.print("Got value: ");
+            Serial.println(newThreshold, DEC);
+            Serial.println("To SAVE to eeprom run \"threshold store\"");
+            
 
         } else if (data == F("threshold get")) {
             Serial.print(F("Threshold value in cm: "));
@@ -219,7 +228,7 @@ int debugMode() {
         Serial.println(F("Exiting debug mode!"));
         return 0;
 
-    } else if (data == F("alarm sart")) {
+    } else if (data == F("alarm start")) {
         playAlarm();
     } else if (data == F("alarm stop")) {
         stopAlarm();
@@ -239,7 +248,7 @@ int debugMode() {
 
 void playAlarm() {
     
-    tone(buzzerPin, 800, 10000);
+    tone(buzzerPin, 3000, 10000);
     
     if (Serial) {
         Serial.println(F("Starting alarm"));
@@ -298,6 +307,8 @@ void printDebugCmds() {
         Serial.println(F("CMDS:"));
         Serial.println(F("alarm stop|start"));
         Serial.println(F("indicator on|off"));
+        Serial.println(F("debug off / exit")); //Or exit
+
         Serial.println();
     }
 }
