@@ -7,12 +7,13 @@
 */
 
 // defines pins numbers
-const int interuptPin = 2;
 const int trigPin = 4;
 const int echoPin = 5;
 const int buzzerPin = 9;
 const int indicatorPin = 10;
 
+// Interupt not implemented!!
+const int interuptPin = 2;
 
 //debug flag
 bool printMesurments = false;
@@ -31,26 +32,6 @@ const int threshold = 200;
 //For timer 
 unsigned long parkTime = 0;
 
-/*
-char* serialCMDs[] = {
-    "debug on",
-    "debug off",
-    "set threshold",
-};
-
-char* debugCMDs[] = {
-    "alarm stop",
-    "alarm start",
-    "print on",
-    "print off",
-    "indicator on",
-    "indicator off"
-};
-*/
-//Prototypes
-void ISRHandler(void);
-
-
 
 void setup() {
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
@@ -59,14 +40,15 @@ void setup() {
     pinMode(buzzerPin, OUTPUT); 
     pinMode(indicatorPin, OUTPUT); 
     
-    pinMode(interuptPin, INPUT_PULLUP); 
-
     
     Serial.begin(9600); // Starts the serial communication
 
+    /*
+    pinMode(interuptPin, INPUT_PULLUP);
     //noInterrupts();
     interrupts();
     attachInterrupt(digitalPinToInterrupt(interuptPin), ISRHandler, LOW);
+    */
 }
 
 void loop() {
@@ -74,9 +56,6 @@ void loop() {
     handleConsole();
     
     checkForCar();
-
-    
-    
 
     delay(500);
     
@@ -164,10 +143,7 @@ void handleConsole() {
 
         if (data == F("debug on")) {
             Serial.println(F("Entering debug mode!"));
-            Serial.println(F("CMDS:"));
-            Serial.println(F("alarm stop|start"));
-            Serial.println(F("indicator on|off"));
-            Serial.println();
+            printDebugCmds();
 
             //Hand over execution to debug mode
             while(debugMode()){};
@@ -176,10 +152,16 @@ void handleConsole() {
             printMesurments = true;
         } else if (data == F("print off")) {
             printMesurments = false;
-        } else if (data == F("set threshold")) {
+        } else if (data == F("threshold set")) {
+            
             Serial.print(F("Enter threshold value in cm: "));
             String newThresholdString = Serial.readStringUntil("\n");
             int newThreshold =  atoi( newThresholdString.c_str() );
+        } else if (data == F("threshold get")) {
+
+        } else {
+            Serial.println(F("Unrecognized command!"));
+            printRunCmds();
         }
 
         
@@ -206,8 +188,9 @@ int debugMode() {
     // read the incoming string:
     String data = Serial.readStringUntil("\n");
 
-    if (data == F("debug off")) {
+    if (data == F("debug off") || data == F("exit")) {
         //Exit debug mode
+        Serial.println(F("Exiting debug mode!"));
         return 0;
 
     } else if (data == F("alarm sart")) {
@@ -218,6 +201,9 @@ int debugMode() {
         indicator(true);
     } else if (data == F("indicator off")) {
         indicator(false);
+    } else {
+        Serial.println(F("Unrecognized command!"));
+        printDebugCmds();
     }
 
 
@@ -226,19 +212,56 @@ int debugMode() {
 }
 
 void playAlarm() {
+    
     tone(buzzerPin, 800, 10000);
+    
+    if (Serial) {
+        Serial.println(F("Starting alarm"));
+    }
 }
 void stopAlarm() {
+    
     noTone(buzzerPin);
+    
+    if (Serial) {
+        Serial.println(F("Alarm force stoped"));
+    }
 }
 
 void indicator(bool on) {
     if (on) {
         digitalWrite(indicatorPin, HIGH);
+        
+        if (Serial) {
+            Serial.println(F("Indicator on"));
+        }
     } else {
         digitalWrite(indicatorPin, LOW);
+        
+        if (Serial) {
+            Serial.println(F("Indicator off"));
+        }
     }
     
+}
+
+void printDebugCmds() {
+    if (Serial) {
+        Serial.println(F("CMDS:"));
+        Serial.println(F("alarm stop|start"));
+        Serial.println(F("indicator on|off"));
+        Serial.println();
+    }
+}
+
+void printRunCmds() {
+    if (Serial) {
+        Serial.println(F("CMDS:"));
+        Serial.println(F("debug on|off"));
+        Serial.println(F("print on|off"));
+        Serial.println(F("threshold set|get"));
+        Serial.println();
+    }
 }
 
 
