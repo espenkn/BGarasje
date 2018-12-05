@@ -6,6 +6,8 @@
 *
 */
 
+#include <EEPROM.h>
+
 // defines pins numbers
 const int trigPin = 4;
 const int echoPin = 5;
@@ -26,8 +28,11 @@ int distance;
 enum carState {in, out};
 enum carState currentState;
 
+
 //distance in cm to define a car is in place (less-than threshold)
-const int threshold = 200;
+// loaded from EEPROM
+int threshold = -1;
+const int defaultThreshold = 200;
 
 //For timer 
 unsigned long parkTime = 0;
@@ -49,6 +54,14 @@ void setup() {
     interrupts();
     attachInterrupt(digitalPinToInterrupt(interuptPin), ISRHandler, LOW);
     */
+
+    threshold = getStoredThresholdDistance();
+
+    if (threshold < 0) {
+        //probably bad config, load default
+        threshold = defaultThreshold;
+    }
+
 }
 
 void loop() {
@@ -88,20 +101,12 @@ void checkForCar() {
         //Store time parked
         parkTime = millis();
 
+    } else {
+        //Clear all
     }
 
-
 }
 
-
-void setThresholdDistance(int threshold) {
-   
-}
-
-
-bool carParked() {
-    return (threshold < distance);
-}
 
 
 //Bedre navn
@@ -113,6 +118,8 @@ void displayParked() {
     //start timer - Run for at least 10 seconds
     //stop timer if car no longer parked
     playAlarm();
+
+    indicator(true);
 
 
     
@@ -126,6 +133,9 @@ void monitorParked() {
 
 
 
+bool carParked() {
+    return (threshold < distance);
+}
 
 
 void handleConsole() {
@@ -150,15 +160,31 @@ void handleConsole() {
             
         } else if (data == F("print on")) {
             printMesurments = true;
+
         } else if (data == F("print off")) {
             printMesurments = false;
+
         } else if (data == F("threshold set")) {
             
             Serial.print(F("Enter threshold value in cm: "));
             String newThresholdString = Serial.readStringUntil("\n");
             int newThreshold =  atoi( newThresholdString.c_str() );
-        } else if (data == F("threshold get")) {
+            
+            setThresholdDistance(newThreshold);
 
+        } else if (data == F("threshold get")) {
+            Serial.print(F("Threshold value in cm: "));
+            Serial.println(threshold, DEC);
+            
+        } else if (data == F("threshold store")) {
+            storeThresholdDistance();
+            Serial.println(F("Stored to EEPROM"));
+
+        } else if (data == F("threshold eeprom")) {
+            Serial.print(F("Threshold stored in EEPROM is: "));
+            int t = getStoredThresholdDistance();
+            Serial.println(t, DEC);
+            
         } else {
             Serial.println(F("Unrecognized command!"));
             printRunCmds();
@@ -177,7 +203,7 @@ int debugMode() {
     //Wait for input or loss of Serial
     for(;;) {
         if (!Serial) {
-            return;
+            return 0;
         }
         if (Serial.available() > 0) {
             break;
@@ -245,6 +271,28 @@ void indicator(bool on) {
     
 }
 
+
+// set runtime threshold
+void setThresholdDistance(int newThreshold) {
+    threshold = newThreshold;
+}
+
+// get runtime threshold
+int getThresholdDistance() {
+    return threshold;
+}
+// store runtime threshold to EEPROM
+void storeThresholdDistance() {
+    EEPROM.put(0, threshold);
+}
+
+int getStoredThresholdDistance() {
+    int t;
+    EEPROM.get(0, t);
+
+    return t;
+}
+
 void printDebugCmds() {
     if (Serial) {
         Serial.println(F("CMDS:"));
@@ -259,7 +307,7 @@ void printRunCmds() {
         Serial.println(F("CMDS:"));
         Serial.println(F("debug on|off"));
         Serial.println(F("print on|off"));
-        Serial.println(F("threshold set|get"));
+        Serial.println(F("threshold set|get|store|eeprom"));
         Serial.println();
     }
 }
