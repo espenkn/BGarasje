@@ -10,9 +10,9 @@
 
 // defines pins numbers
 const int trigPin = 4;
-const int echoPin = 5;
+const int echoPin = 6;
 const int buzzerPin = 9;
-const int indicatorPin = 10;
+const int indicatorPin = 11;
 
 // Interupt not implemented!!
 const int interuptPin = 2;
@@ -28,6 +28,8 @@ int distance;
 enum carState {in, out};
 enum carState currentState;
 
+
+enum systemState {idle, carOut, carIn, carParking, carLeaving};
 
 //distance in cm to define a car is in place (less-than threshold)
 // loaded from EEPROM
@@ -72,6 +74,12 @@ void loop() {
 
     delay(500);
     
+}
+
+
+
+void statemachine() {
+
 }
 
 
@@ -248,7 +256,7 @@ int debugMode() {
 
 void playAlarm() {
     
-    tone(buzzerPin, 3000, 10000);
+    tone(buzzerPin, 800, 10000);
     
     if (Serial) {
         Serial.println(F("Starting alarm"));
