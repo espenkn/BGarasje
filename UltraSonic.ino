@@ -17,6 +17,8 @@ const int indicatorPin = 11;
 // Interupt not implemented!!
 const int interuptPin = 2;
 
+const float speedOfSound = 0.034;
+
 //debug flag
 bool printMesurments = false;
 
@@ -99,7 +101,7 @@ void checkForCar() {
     // Reads the echoPin, returns the sound wave travel time in microseconds
     duration = pulseIn(echoPin, HIGH);
     // Calculating the distance
-    distance = (duration*0.034)/2;
+    distance = (duration*speedOfSound)/2; //full time is "back and forth", half time is "time to target".
 
    
 
@@ -236,9 +238,9 @@ int debugMode() {
         Serial.println(F("Exiting debug mode!"));
         return 0;
 
-    } else if (data == F("alarm start")) {
+    } else if (data == F("alarm on")) {
         playAlarm();
-    } else if (data == F("alarm stop")) {
+    } else if (data == F("alarm off")) {
         stopAlarm();
     } else if (data == F("indicator on")) {
         indicator(true);
@@ -313,7 +315,7 @@ int getStoredThresholdDistance() {
 void printDebugCmds() {
     if (Serial) {
         Serial.println(F("CMDS:"));
-        Serial.println(F("alarm stop|start"));
+        Serial.println(F("alarm on|off"));
         Serial.println(F("indicator on|off"));
         Serial.println(F("debug off / exit")); //Or exit
 
