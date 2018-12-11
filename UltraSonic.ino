@@ -1,13 +1,11 @@
-/*
-* Ultrasonic Sensor HC-SR04 
-*
-* based on code from Dejan Nedelkovski,
-* www.HowToMechatronics.com
-*
-*/
-
 #include <EEPROM.h>
+#include "support.h"
+#include "eepromstore.h"
+#include "UltraSonicSensor.h"
+#include "Buzzer.h"
+#include "Indicator.h"
 
+/*
 // defines pins numbers
 const int trigPin = 4;
 const int echoPin = 6;
@@ -18,23 +16,30 @@ const int indicatorPin = 11;
 const int interuptPin = 2;
 
 const float speedOfSound = 0.034;
+*/
+
 
 //debug flag
 bool printMesurments = false;
 
+/*
 // defines variables
 long duration;
 int distance;
+*/
 
+/*
 //Sate of car
 enum carState {in, out};
 enum carState currentState;
 
 
 enum systemState {idle, carOut, carIn, carParking, carLeaving};
+*/
 
 //distance in cm to define a car is in place (less-than threshold)
 // loaded from EEPROM
+/*
 int threshold = -1;
 const int defaultThreshold = 200;
 
@@ -42,13 +47,35 @@ const int defaultThreshold = 200;
 unsigned long parkTime = 0;
 
 
+struct config {
+    int threshold;
+    bool alarmEnabeld;
+};
+*/
+
+UltraSonicSensor sensor(pinning.TRIG_PIN, pinning.ECHO_PIN);
+Indicator indicator(pinning.INDICATOR_PIN);
+Buzzer buzzer(pinning.BUZZER_PIN);
+//ParkingControl control(sensor);
+
+struct eepromStore storage;
+struct eepromStore runtimeStorage;
+
 void setup() {
+
+    // Sett IDLE state
+    state = START;
+
+    // Restore EEPROM storage
+    restoreStorage(storage);
+
+    /*
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT); // Sets the echoPin as an Input
     
     pinMode(buzzerPin, OUTPUT); 
     pinMode(indicatorPin, OUTPUT); 
-    
+    */
     
     Serial.begin(9600); // Starts the serial communication
 
@@ -59,6 +86,24 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(interuptPin), ISRHandler, LOW);
     */
 
+
+    // Handle bad configuration....
+    if (storage.threshold < 1) { 
+        Serial.println(F("Bad sensor calibartion. Please run calibrate")); 
+        storage.threshold = defaultThreshold;
+    }
+    if (storage.alarmEnabeld == 0) { 
+        Serial.println(F("Alarm is disabled"));
+    }    
+    
+
+    // Copy storage after hadle bad config
+    runtimeStorage = storage;
+
+    // Print current configuration on serial
+    serialPrintConfiguration();
+
+
     threshold = getStoredThresholdDistance();
 
     if (threshold < 1) {
@@ -66,10 +111,15 @@ void setup() {
         threshold = defaultThreshold;
     }
 
+    Serial.flush();
+
 }
 
 void loop() {
-   
+    // put your main code here, to run repeatedly:
+    iterateStatemachine();
+
+
     handleConsole();
     
     checkForCar();
@@ -78,86 +128,48 @@ void loop() {
     
 }
 
+/*
+ CAR_DETECTED, 
+    CAR_PARKED, 
+    CAR_REMOVED, 
+    SEARCHING
+    SERVICE, 
+    MENU*/
 
+void iterateStatemachine()
+{
+  
+    switch (state) {
+        case IDLE:
+        case SEARCHING:
+            //Go to correct state
+            if(control.carDetected()) 
+            {
+                state = CAR_DETECTED;
+            }
+            break;
+        
+        case CAR_DETECTED:
+            
+            break;
 
-void statemachine() {
-
-}
-
-
-bool timerExpired() {
-
-}
-
-
-void checkForCar() {
-    // Clears the trigPin
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-    duration = pulseIn(echoPin, HIGH);
-    // Calculating the distance
-    distance = (duration*speedOfSound)/2; //full time is "back and forth", half time is "time to target".
-
-   
-
-    if (carParked()) {
-        //possible car in place
-
-        //Store time parked
-        parkTime = millis();
-
-    } else {
-        //Clear all
+        default:
+            break;
     }
 
 }
 
 
-
-//Bedre navn
-void displayParked() {
-    //do something with some pins
-    //Blink lights
-    //sound the alarm
-
-    //start timer - Run for at least 10 seconds
-    //stop timer if car no longer parked
-    playAlarm();
-
-    indicator(true);
-
-
-    
-  
-}
-
-void monitorParked() {
-    while(carParked() && !timerExpired()){}
-}
-
-
-
-
-bool carParked() {
-    return (threshold < distance);
-}
-
-
 void handleConsole() {
    // Prints the distance on the Serial Monitor
-    if (printMesurments && Serial) {
+    if (printMesurments) {
         Serial.print("Distance: ");
         Serial.println(distance);
     }
 
 
     // reply only when you receive data:
-	if (Serial && Serial.available() > 0) {
+	if (Serial.available() > 0) {
 		// read the incoming string:
         String data = Serial.readStringUntil("\n");
 
@@ -221,9 +233,6 @@ int debugMode() {
 
     //Wait for input or loss of Serial
     for(;;) {
-        if (!Serial) {
-            return 0;
-        }
         if (Serial.available() > 0) {
             break;
         }
@@ -255,7 +264,7 @@ int debugMode() {
 	return 1;
 
 }
-
+/*
 void playAlarm() {
     
     tone(buzzerPin, 800, 10000);
@@ -272,7 +281,8 @@ void stopAlarm() {
         Serial.println(F("Alarm force stoped"));
     }
 }
-
+*/
+/*
 void indicator(bool on) {
     if (on) {
         digitalWrite(indicatorPin, HIGH);
@@ -289,8 +299,8 @@ void indicator(bool on) {
     }
     
 }
-
-
+*/
+/*
 // set runtime threshold
 void setThresholdDistance(int newThreshold) {
     threshold = newThreshold;
@@ -311,7 +321,9 @@ int getStoredThresholdDistance() {
 
     return t;
 }
+*/
 
+/*
 void printDebugCmds() {
     if (Serial) {
         Serial.println(F("CMDS:"));
@@ -320,6 +332,7 @@ void printDebugCmds() {
         Serial.println(F("debug off / exit")); //Or exit
 
         Serial.println();
+        Serial.flush();
     }
 }
 
@@ -330,10 +343,11 @@ void printRunCmds() {
         Serial.println(F("print on|off"));
         Serial.println(F("threshold set|get|store|eeprom"));
         Serial.println();
+        Serial.flush();
     }
 }
 
-
+*/
 
 void ISRHandler() {
     return;
