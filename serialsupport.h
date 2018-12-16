@@ -3,9 +3,6 @@
 
 #include "Arduino.h"
 
-int incomingByte = 0;
-
-
 void printDebugCmds() {
     
     Serial.println(F("CMDS:"));
@@ -28,5 +25,34 @@ void printRunCmds() {
     Serial.flush();
     
 }
+
+
+void serialPrintConfiguration(struct eepromStore runtimeStorage, struct eepromStore storage)
+{
+    Serial.print(F("\n\n"));
+    
+    Serial.println(F("**** Active Configuration:"));
+    Serial.print(F("Threshold value:"));
+  
+    Serial.print(runtimeStorage.threshold);
+    Serial.println();
+  
+    Serial.print(F("Alarm Enabeld:"));
+    Serial.println(runtimeStorage.alarmEnabeld);
+    
+    Serial.println();
+    
+    Serial.println(F("**** Saved Configuration:"));
+    Serial.print(F("Threshold value:"));
+  
+    Serial.print(storage.threshold);
+    Serial.println();
+  
+    Serial.print(F("Alarm Enabeld:"));
+    Serial.println(storage.alarmEnabeld);
+    
+    Serial.flush();
+}
+
 
 #endif
