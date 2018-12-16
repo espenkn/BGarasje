@@ -19,8 +19,12 @@ const int interuptPin = 2;
 
 const float speedOfSound = 0.034;
 
+const int speedOfSoundInt = 34;
+
+
+bool printText = false;
 //debug flag
-bool printMesurments = false;
+bool printMesurments = true;
 
 // defines variables
 long duration;
@@ -36,7 +40,7 @@ enum systemState {idle, carOut, carIn, carParking, carLeaving};
 //distance in cm to define a car is in place (less-than threshold)
 // loaded from EEPROM
 int threshold = -1;
-const int defaultThreshold = 200;
+const int defaultThreshold = 178;
 
 //For timer 
 unsigned long parkTime = 0;
@@ -74,7 +78,7 @@ void loop() {
     
     checkForCar();
 
-    delay(500);
+    delay(100);
     
 }
 
@@ -100,18 +104,22 @@ void checkForCar() {
     digitalWrite(trigPin, LOW);
     // Reads the echoPin, returns the sound wave travel time in microseconds
     duration = pulseIn(echoPin, HIGH);
+    //Serial.print("Dur:");
+    //Serial.println(duration, DEC);
     // Calculating the distance
-    distance = (duration*speedOfSound)/2; //full time is "back and forth", half time is "time to target".
+    distance = (duration*speedOfSoundInt)/2000; //full time is "back and forth", half time is "time to target".
 
    
 
     if (carParked()) {
         //possible car in place
+        indicator(true);
 
         //Store time parked
         parkTime = millis();
 
     } else {
+        indicator(false);
         //Clear all
     }
 
@@ -144,14 +152,14 @@ void monitorParked() {
 
 
 bool carParked() {
-    return (threshold < distance);
+    return (distance < threshold);
 }
 
 
 void handleConsole() {
    // Prints the distance on the Serial Monitor
     if (printMesurments && Serial) {
-        Serial.print("Distance: ");
+        print("Distance: ");
         Serial.println(distance);
     }
 
@@ -216,6 +224,25 @@ void handleConsole() {
 
 }
 
+
+void println(String str) 
+{
+    if (!printText) {
+        return;
+    }
+
+    Serial.println(str);
+}
+
+void print(String str)
+{
+    if (!printText) {
+        return;
+    }
+    
+    Serial.print(str);
+}
+
 ///Function for manually test sub-systems
 int debugMode() {
 
@@ -260,32 +287,28 @@ void playAlarm() {
     
     tone(buzzerPin, 800, 10000);
     
-    if (Serial) {
-        Serial.println(F("Starting alarm"));
-    }
+    println(F("Starting alarm"));
+    
 }
 void stopAlarm() {
     
     noTone(buzzerPin);
     
-    if (Serial) {
-        Serial.println(F("Alarm force stoped"));
-    }
+    println(F("Alarm force stoped"));
+    
 }
 
 void indicator(bool on) {
     if (on) {
         digitalWrite(indicatorPin, HIGH);
         
-        if (Serial) {
-            Serial.println(F("Indicator on"));
-        }
+        println(F("Indicator on"));
+        
     } else {
         digitalWrite(indicatorPin, LOW);
         
-        if (Serial) {
-            Serial.println(F("Indicator off"));
-        }
+        println(F("Indicator off"));
+        
     }
     
 }
