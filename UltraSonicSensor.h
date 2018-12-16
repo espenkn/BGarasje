@@ -12,6 +12,8 @@ class UltraSonicSensor
     int trigPin; //lage const?
     int echoPin; //lage const?
     bool valid;
+
+    bool print = false;
     
   public: 
    
@@ -26,13 +28,18 @@ class UltraSonicSensor
 
     int measureTime();
     int measureDistance();
+
+    //for use with serial monitor
+    void setPrint(bool onOff);
     
 
   protected:
+    
     void registerPins();
     void start();
     bool isValid();
 
+    bool printEnabled(); 
 };
 
 #endif

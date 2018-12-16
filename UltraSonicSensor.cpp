@@ -33,7 +33,7 @@ int UltraSonicSensor::measureTime() {
     this->start();
 
     // Reads the echoPin, returns the sound wave travel time in microseconds
-    return pulseIn(echoPin, HIGH);
+    return pulseIn(this->echoPin, HIGH);
 
      
 }
@@ -41,7 +41,14 @@ int UltraSonicSensor::measureDistance() {
    
     // Calculating the distance
     //return (this->measureTime() * this->speedOfSoundInAir) / 2; //full time is "back and forth", half time is "time to target".
-    return (this->measureTime() * this->speedOfSoundInAir) / 2000; //full time is "back and forth", half time is "time to target".
+    int dist = (this->measureTime() * this->speedOfSoundInAir) / 2000; //full time is "back and forth", half time is "time to target".
+
+    if (this->printEnabled())
+    {
+        Serial.println(dist, DEC);
+    }
+
+    return dist;
 
 }
 
@@ -66,4 +73,14 @@ void UltraSonicSensor::registerPins()
 bool UltraSonicSensor::isValid() 
 {
     return this->valid;
+}
+
+void UltraSonicSensor::setPrint(bool onOff) 
+{
+    this->print = onOff;
+}
+
+bool UltraSonicSensor::printEnabled() 
+{
+    return this->print;
 }
