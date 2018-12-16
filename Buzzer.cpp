@@ -18,17 +18,24 @@ void Buzzer::startAlarm()
     
     if (this->isEnabled() == false) 
     {    
-        Serial.println(F("Alarm disabled"));
-        Serial.flush();
+
+        if (this->printEnabled()) 
+        {
+            Serial.println(F("Alarm disabled"));
+            Serial.flush();
+        }
+        
     
         return;
     } 
 
     tone(this->getPin(), 800, 10000);
 
-    Serial.println(F("Starting alarm"));
-    Serial.flush();  
-
+    if (this->printEnabled()) 
+    {
+        Serial.println(F("Starting alarm"));
+        Serial.flush();  
+    }
 }
 
 void Buzzer::stopAlarm() 
@@ -40,9 +47,11 @@ void Buzzer::stopAlarm()
 
     noTone(this->getPin());
     
-    Serial.println(F("Alarm force stoped"));
-    Serial.flush();
-    
+    if (this->printEnabled()) 
+    {
+        Serial.println(F("Alarm force stoped"));
+        Serial.flush();
+    }
 }
     
 
@@ -83,4 +92,14 @@ void Buzzer::registerPin()
 bool Buzzer::isValid() 
 {
     return this->valid;
+}
+
+void Buzzer::setPrint(bool onOff) 
+{
+    this->printText = onOff;
+}
+
+bool Buzzer::printEnabled() 
+{
+    return this->printText;
 }
