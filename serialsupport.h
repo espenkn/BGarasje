@@ -3,7 +3,8 @@
 
 #include "Arduino.h"
 
-void printDebugCmds() {
+void printDebugCmds() 
+{
     
     Serial.println(F("CMDS:"));
     Serial.println(F("alarm on|off"));
@@ -15,7 +16,8 @@ void printDebugCmds() {
 
 }
 
-void printRunCmds() {
+void printRunCmds() 
+{
     
     Serial.println(F("CMDS:"));
     Serial.println(F("debug on|off"));

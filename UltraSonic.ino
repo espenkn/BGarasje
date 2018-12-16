@@ -76,7 +76,8 @@ void loop() {
 void iterateStatemachine()
 {
   
-    switch (state) {
+    switch (state) 
+    {
         case IDLE:
         case SEARCHING:
             //Go to correct state
@@ -97,7 +98,8 @@ void iterateStatemachine()
 }
 
 
-void handleConsole() {
+void handleConsole() 
+{
     
     
     /*
@@ -147,7 +149,7 @@ void handleConsole() {
             int newThreshold = Serial.parseInt();
             
             setThresholdDistance(newThreshold);
-            
+
             Serial.println();
             Serial.print("Got value: ");
             Serial.println(newThreshold, DEC);
@@ -192,7 +194,7 @@ int debugMode()
 {
 
     //Wait for input 
-    for(;;) 
+    for (;;) 
     {
         if (Serial.available() > 0) 
         {
@@ -213,19 +215,19 @@ int debugMode()
     } 
     else if (data == F("alarm on")) 
     {
-        playAlarm();
+        buzzer.playAlarm();
     } 
     else if (data == F("alarm off")) 
     {
-        stopAlarm();
+        buzzer.stopAlarm();
     } 
     else if (data == F("indicator on")) 
     {
-        indicator(true);
+        indicator.turnOn();
     } 
     else if (data == F("indicator off")) 
     {
-        indicator(false);
+        indicator.turnOff();
     }
     else 
     {
