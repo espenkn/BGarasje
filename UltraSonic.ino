@@ -5,23 +5,30 @@
 #include "Buzzer.h"
 #include "Indicator.h"
 #include "serialsupport.h"
+#include "ParkingControl.h"
 
 
 //debug flag
 bool printMesurments = false;
 
-UltraSonicSensor sensor(pinning.TRIG_PIN, pinning.ECHO_PIN);
-Indicator indicator(pinning.INDICATOR_PIN);
-Buzzer buzzer(pinning.BUZZER_PIN);
-//ParkingControl control(sensor);
+UltraSonicSensor sensor(Support::pinning.TRIG_PIN, Support::pinning.ECHO_PIN);
+Indicator indicator(Support::pinning.INDICATOR_PIN);
+Buzzer buzzer(Support::pinning.BUZZER_PIN);
+ParkingControl control();
+
+
 
 struct eepromStore storage;
 struct eepromStore runtimeStorage;
 
+
+#define LOOPDELAY 50
+
 void setup() {
 
     // Sett IDLE state
-    state = START;
+    
+
 
     // Restore EEPROM storage
     restoreStorage(storage);
@@ -36,7 +43,7 @@ void setup() {
     if (runtimeStorage.threshold < 1) 
     { 
         Serial.println(F("Bad sensor calibartion. Loading default. Please run calibrate and store to eeprom.")); 
-        runtimeStorage.threshold = defaultThreshold;
+        runtimeStorage.threshold = Support::defaultThreshold;
     }
 
     if (runtimeStorage.alarmEnabeld == 0) 
@@ -59,42 +66,36 @@ void loop() {
 
     handleConsole();
     
-    checkForCar();
+    //checkForCar();
 
-    delay(500);
+    delay(LOOPDELAY);
     
 }
 
-/*
- CAR_DETECTED, 
-    CAR_PARKED, 
-    CAR_REMOVED, 
-    SEARCHING
-    SERVICE, 
-    MENU*/
 
+///MOVE STATEMACHINE INTO ParkingControl
 void iterateStatemachine()
 {
-  
+    /*
     switch (state) 
     {
-        case IDLE:
-        case SEARCHING:
+        case ParkingControl::IDLE:
+        case ParkingControl::SEARCHING:
             //Go to correct state
             if(control.carDetected()) 
             {
-                state = CAR_DETECTED;
+                state = ParkingControl::CAR_DETECTED;
             }
             break;
         
-        case CAR_DETECTED:
+        case ParkingControl::CAR_DETECTED:
             
             break;
 
         default:
             break;
     }
-
+    */
 }
 
 
@@ -215,7 +216,7 @@ int debugMode()
     } 
     else if (data == F("alarm on")) 
     {
-        buzzer.playAlarm();
+        buzzer.startAlarm();
     } 
     else if (data == F("alarm off")) 
     {

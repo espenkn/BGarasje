@@ -11,7 +11,18 @@ class ParkingControl
     UltraSonicSensor* sensor;
     
   public: 
-   
+    enum States {
+        IDLE,
+        START, 
+        SEARCHING,
+        CAR_DETECTED, 
+        CAR_PARKED, 
+        CAR_REMOVED, 
+        SERVICE, 
+        MENU
+    };
+
+  
 
     ParkingControl(UltraSonicSensor* sensor);
     
