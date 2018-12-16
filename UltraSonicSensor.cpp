@@ -40,7 +40,8 @@ int UltraSonicSensor::measureTime() {
 int UltraSonicSensor::measureDistance() {
    
     // Calculating the distance
-    return (this->measureTime() * this->speedOfSoundInAir) / 2; //full time is "back and forth", half time is "time to target".
+    //return (this->measureTime() * this->speedOfSoundInAir) / 2; //full time is "back and forth", half time is "time to target".
+    return (this->measureTime() * this->speedOfSoundInAir) / 2000; //full time is "back and forth", half time is "time to target".
 
 }
 

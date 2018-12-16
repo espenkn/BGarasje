@@ -16,7 +16,8 @@ class UltraSonicSensor
   public: 
    
 
-    static const float speedOfSoundInAir = 0.034;
+    //static const float speedOfSoundInAir = 0.034;
+    static const int speedOfSoundInAir = 34;
     
     UltraSonicSensor(int trigPin, int echoPin);
 
