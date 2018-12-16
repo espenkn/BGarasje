@@ -12,6 +12,7 @@ class Indicator
     int pin; 
     bool enabled = true;
     bool valid = false;
+    bool printText = true;
     
   public: 
    
@@ -28,9 +29,12 @@ class Indicator
     
     bool isEnabled();
 
+    void setPrint(bool onOff);
+    
   protected:
     void registerPin();
     bool isValid();
+    bool printEnabled();
 
 
 };

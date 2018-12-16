@@ -18,17 +18,22 @@ void Indicator::turnOn()
 
     if (this->isEnabled() == false) 
     {    
-        Serial.println(F("Indicator disabled"));
-        Serial.flush();
-    
+        if (this->printEnabled()) 
+        {
+            Serial.println(F("Indicator disabled"));
+            Serial.flush();
+        }
+        
         return;
     } 
         
     digitalWrite(this->getPin(), HIGH);
     
-    
-    Serial.println(F("Indicator on"));
-    Serial.flush();
+    if (this->printEnabled()) 
+    {
+        Serial.println(F("Indicator on"));
+        Serial.flush();
+    }
 }
 
 void Indicator::turnOff() 
@@ -40,9 +45,11 @@ void Indicator::turnOff()
     
     digitalWrite(this->getPin(), LOW);
     
-    Serial.println(F("Indicator off"));
-    Serial.flush();
-    
+    if (this->printEnabled()) 
+    {
+        Serial.println(F("Indicator off"));
+        Serial.flush();
+    }
 }
     
 
@@ -83,4 +90,13 @@ void Indicator::registerPin()
 bool Indicator::isValid() 
 {
     return this->valid;
+}
+void Indicator::setPrint(bool onOff) 
+{
+    this->printText = onOff;
+}
+
+bool Indicator::printEnabled() 
+{
+    return this->printText;
 }
