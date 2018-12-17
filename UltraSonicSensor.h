@@ -26,7 +26,7 @@ class UltraSonicSensor
     int getTrigPin();
     int getEchoPin();
 
-    int measureTime();
+    long int measureTime();
     int measureDistance();
 
     //for use with serial monitor

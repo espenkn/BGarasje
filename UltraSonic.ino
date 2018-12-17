@@ -8,6 +8,7 @@
 #include "serialsupport.h"
 #include "ParkingControl.h"
 
+#define PLOTMODE 1 
 
 
 //debug flag
@@ -24,7 +25,7 @@ struct eepromStore storage;
 struct eepromStore runtimeStorage;
 
 ///Tweek or remove?
-#define LOOPDELAY 50
+#define LOOPDELAY 10
 
 void setup() {
 
@@ -32,7 +33,10 @@ void setup() {
     restoreStorage(storage);
 
     
-    Serial.begin(115200); // Starts the serial communication
+    
+    Serial.begin(9600); // Starts the serial communication
+    Serial.end();
+    Serial.begin(9600);
 
     // Copy storage 
     runtimeStorage = storage;
@@ -40,22 +44,39 @@ void setup() {
     // Handle bad configuration....
     if (runtimeStorage.threshold < 1) 
     { 
-        Serial.println(F("Bad sensor calibartion. Loading default. Please run calibrate and store to eeprom.")); 
+        if (!PLOTMODE) 
+        {
+            Serial.println(F("Bad sensor calibartion. Loading default. Please run calibrate and store to eeprom.")); 
+        }
+        
         runtimeStorage.threshold = Support::defaultThreshold;
     }
 
     if (runtimeStorage.alarmEnabeld == false) 
     { 
-        Serial.println(F("Alarm is disabled"));
+        if (!PLOTMODE) 
+        {
+            Serial.println(F("Alarm is disabled"));
+        }
     }    
-       
+    
+    control.setThreshold(runtimeStorage.threshold);
 
-    // Print current configuration on serial
-    serialPrintConfiguration(runtimeStorage, storage);
+    if (!PLOTMODE) 
+    {
+        // Print current configuration on serial
+        serialPrintConfiguration(runtimeStorage, storage);
+        printMenu();
 
-    printMenu();
-
+        
+    } 
+    else
+    {
+        control.setPrint(true);
+    }
+    
     Serial.flush();
+    
 
 }
 
@@ -95,6 +116,7 @@ void runMenu(int option)
     switch (option) 
     {
         case MENU_PRINT_ON:
+            Serial.print("Start print");
             sensor.setPrint(true);
             break;
         
@@ -112,6 +134,7 @@ void runMenu(int option)
         
         case MENU_THRESHOLD_SET:
             runtimeStorage.threshold = thresholdHelper();
+            control.setThreshold(runtimeStorage.threshold); //update control
             break;
         
         case MENU_THRESHOLD_GET:
@@ -119,15 +142,16 @@ void runMenu(int option)
             Serial.println(runtimeStorage.threshold, DEC);
             break;
         
-        case MENU_THRESHOLD_STORE:
-            saveStorage(runtimeStorage); //Store to EEPROM 
-            restoreStorage(storage); //Update copy
-            Serial.println(F("Stored to EEPROM"));
-            break;
-
+        
         case MENU_THRESHOLD_EEPROM:
             Serial.print(F("Threshold stored in EEPROM is: "));
             Serial.println(storage.threshold, DEC);
+            break;
+
+        case MENU_SAVE_CONFIG:
+            saveStorage(runtimeStorage); //Store to EEPROM 
+            restoreStorage(storage); //Update copy
+            Serial.println(F("Stored to EEPROM"));
             break;
 
         case MENU_PRINT_CONFIG:

@@ -27,12 +27,13 @@ void printMenu()
     Serial.print(MENU_THRESHOLD_SET, DEC);
     Serial.println(F(": Threshold Get Runtime Value"));
 
-    Serial.print(MENU_THRESHOLD_STORE, DEC);
-    Serial.println(F(": Threshold Store To EEPROM"));
-
+    
     Serial.print(MENU_THRESHOLD_EEPROM, DEC);
     Serial.println(F(": Threshold Get Stored Value From EEPROM"));
 
+    Serial.print(MENU_SAVE_CONFIG, DEC);
+    Serial.println(F(": Store Configuration To EEPROM"));
+    
     Serial.print(MENU_PRINT_CONFIG, DEC);
     Serial.println(F(": Print Configuration"));
 

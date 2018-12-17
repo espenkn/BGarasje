@@ -23,7 +23,7 @@ void UltraSonicSensor::start() {
     digitalWrite(this->trigPin, LOW);
 } 
 
-int UltraSonicSensor::measureTime() {
+long int UltraSonicSensor::measureTime() {
     /*
     if(!this->isValid())
     {
@@ -84,3 +84,4 @@ bool UltraSonicSensor::printEnabled()
 {
     return this->print;
 }
+

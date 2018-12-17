@@ -8,7 +8,12 @@
 
 struct eepromStore {
     int threshold;
+    int normalDistance;
+    
+    int alarmDuration;
+    int alarmFrequency;
     bool alarmEnabeld;
+
 };
 
 
