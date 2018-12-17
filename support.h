@@ -19,12 +19,4 @@ class Support
 
 };
 
-/*
-class ParkingState 
-{
-    public:
-       
-};
-*/
-
 #endif

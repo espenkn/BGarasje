@@ -14,21 +14,17 @@ bool printMesurments = false;
 UltraSonicSensor sensor(Support::pinning.TRIG_PIN, Support::pinning.ECHO_PIN);
 Indicator indicator(Support::pinning.INDICATOR_PIN);
 Buzzer buzzer(Support::pinning.BUZZER_PIN);
-ParkingControl control();
+ParkingControl control(&sensor);
 
 
 
 struct eepromStore storage;
 struct eepromStore runtimeStorage;
 
-
+///Tweek or remove?
 #define LOOPDELAY 50
 
 void setup() {
-
-    // Sett IDLE state
-    
-
 
     // Restore EEPROM storage
     restoreStorage(storage);
@@ -61,56 +57,38 @@ void setup() {
 
 void loop() {
     // put your main code here, to run repeatedly:
-    iterateStatemachine();
-
+    control.iterateStatemachine();
 
     handleConsole();
-    
-    //checkForCar();
 
     delay(LOOPDELAY);
     
 }
 
-
-///MOVE STATEMACHINE INTO ParkingControl
-void iterateStatemachine()
+void plotPrint(bool on)
 {
-    /*
-    switch (state) 
+    if (on) 
     {
-        case ParkingControl::IDLE:
-        case ParkingControl::SEARCHING:
-            //Go to correct state
-            if(control.carDetected()) 
-            {
-                state = ParkingControl::CAR_DETECTED;
-            }
-            break;
-        
-        case ParkingControl::CAR_DETECTED:
-            
-            break;
-
-        default:
-            break;
+        //1. silience all modules that print
+        indicator.setPrint(false);
+        buzzer.setPrint(false);
+        //2. Enable mesurment serialPrintConfiguration
+        sensor.setPrint(true);
+    } 
+    else
+    {
+        //1. silience all modules that print
+        indicator.setPrint(true);
+        buzzer.setPrint(true);
+        //2. Enable mesurment serialPrintConfiguration
+        sensor.setPrint(false);
     }
-    */
+    
 }
-
 
 void handleConsole() 
 {
     
-    
-    /*
-    // Prints the distance on the Serial Monitor
-    if (printMesurments) {
-        Serial.print("Distance: ");
-        Serial.println(distance);
-    }
-    */
-
     // reply only when you receive data:
 	if (Serial.available() > 0) 
     {
@@ -128,14 +106,22 @@ void handleConsole()
         } 
         else if (data == F("print on")) 
         {
-            printMesurments = true;
+            sensor.setPrint(true);
 
         } 
         else if (data == F("print off")) 
         {
-            printMesurments = false;
+            sensor.setPrint(false);
 
         } 
+        else if (data == F("plot on")) 
+        {
+            plotPrint(true);
+        }
+        else if (data == F("plot off")) 
+        {
+            plotPrint(false);
+        }
         else if (data == F("threshold set")) 
         {
             
@@ -149,7 +135,7 @@ void handleConsole()
 
             int newThreshold = Serial.parseInt();
             
-            setThresholdDistance(newThreshold);
+            runtimeStorage.threshold = newThreshold;
 
             Serial.println();
             Serial.print("Got value: ");
@@ -161,33 +147,39 @@ void handleConsole()
         else if (data == F("threshold get")) 
         {
             Serial.print(F("Threshold value in cm: "));
-            Serial.println(threshold, DEC);
+            Serial.println(runtimeStorage.threshold, DEC);
             
         } 
         else if (data == F("threshold store"))
         {
-            storeThresholdDistance();
+            saveStorage(storage);
             Serial.println(F("Stored to EEPROM"));
 
         } 
         else if (data == F("threshold eeprom")) 
         {
             Serial.print(F("Threshold stored in EEPROM is: "));
-            int t = getStoredThresholdDistance();
+            int t = storage.threshold;
             Serial.println(t, DEC);
             
         } 
+        else if (data == F("threshold eeprom")) 
+        {
+            Serial.print(F("Threshold stored in EEPROM is: "));
+            int t = storage.threshold;
+            Serial.println(t, DEC);
+            
+        } 
+        else if (data == F("print config"))
+        {
+            serialPrintConfiguration(runtimeStorage, storage);
+        }
         else 
         {
             Serial.println(F("Unrecognized command!"));
             printRunCmds();
         }
-
-        
-		
     }
-
-
 }
 
 ///Function for manually test sub-systems

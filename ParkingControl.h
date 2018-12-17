@@ -8,10 +8,7 @@
 class ParkingControl
 {
   protected: 
-    UltraSonicSensor* sensor;
-    
-  public: 
-    enum States {
+    enum State {
         IDLE,
         START, 
         SEARCHING,
@@ -22,15 +19,25 @@ class ParkingControl
         MENU
     };
 
+    UltraSonicSensor* sensor;
+    State state = IDLE;
+    
+  public: 
+    
+
   
 
-    ParkingControl(UltraSonicSensor* sensor);
-    
-    void checkForCar();
-    void signalOn();
-    bool timerExpired();
-    void monitorParked();
-    bool carParked();
+      ParkingControl(UltraSonicSensor* sensor);
+      
+      void checkForCar();
+      void signalOn();
+      bool timerExpired();
+      void monitorParked();
+      bool carParked();
+      bool carDetected();
+      
+      void iterateStatemachine();
+
 
 };
 
