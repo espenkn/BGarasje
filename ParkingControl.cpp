@@ -1,5 +1,5 @@
 #include "ParkingControl.h"
-
+#include "UltraSonicSensor.h"
 
 ParkingControl::ParkingControl(UltraSonicSensor* sensor) 
 {
@@ -10,19 +10,21 @@ ParkingControl::ParkingControl(UltraSonicSensor* sensor)
 void ParkingControl::iterateStatemachine()
 {
     
-    switch (state) 
+    switch (state)
     {
         case IDLE:
         case SEARCHING:
-            //Go to correct state
-            if(carDetected()) 
-            {
-                state = CAR_DETECTED;
-            }
+            
             break;
         
-        case ParkingControl::CAR_DETECTED:
+        case CAR_DETECTED:
             
+            break;
+
+        case CAR_PARKED:
+        case CAR_REMOVED:
+        case SERVICE:
+        case MENU:
             break;
 
         default:
@@ -31,6 +33,8 @@ void ParkingControl::iterateStatemachine()
     
 }
 
+
+/*
 void ParkingControl::checkForCar() 
 {
 
@@ -63,4 +67,4 @@ bool ParkingControl::carDetected()
 
 
 }
-
+*/
