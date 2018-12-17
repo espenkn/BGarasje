@@ -7,6 +7,7 @@ class Support
 {
     public: 
         static const int defaultThreshold = 200;
+        static const bool defaultAlarmSetting = false;
 
         static const struct PinConfig {
             static const char TRIG_PIN = 4;

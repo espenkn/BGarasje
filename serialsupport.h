@@ -49,7 +49,7 @@ void printMenu()
     Serial.println(F(": Plotting Mode - Enable"));
 
     Serial.print(MENU_PLOT_OFF, DEC);
-    Serial.println(F(": Exit Plotting - Disable"));
+    Serial.println(F(": Plotting Mode - Disable"));
 
     Serial.print(MENU_THRESHOLD_SET, DEC);
     Serial.println(F(": Threshold Set Runtime Value"));
@@ -104,31 +104,54 @@ void serialPrintConfiguration(struct eepromStore runtimeStorage, struct eepromSt
     Serial.print(F("\n\n"));
     
     Serial.println(F("**** Active Configuration:"));
-    Serial.print(F("Threshold value:"));
+    Serial.print(F("Threshold value: "));
   
-    Serial.print(runtimeStorage.threshold);
+    Serial.print(runtimeStorage.threshold, DEC);
     Serial.println();
   
-    Serial.print(F("Alarm Enabled:"));
-    Serial.println(runtimeStorage.alarmEnabeld);
+    Serial.print(F("Alarm Enabled: "));
+    if (runtimeStorage.alarmEnabeld) 
+    {
+        Serial.println(F("On"));
+    } 
+    else
+    {
+        Serial.println(F("Off"));
+    }
+    
     
     Serial.println();
     
     Serial.println(F("**** Saved Configuration:"));
-    Serial.print(F("Threshold value:"));
+    Serial.print(F("Threshold value: "));
   
-    Serial.print(storage.threshold);
+    Serial.print(storage.threshold, DEC);
     Serial.println();
   
-    Serial.print(F("Alarm Enabled:"));
-    Serial.println(storage.alarmEnabeld);
+    Serial.print(F("Alarm Enabled: "));
+    if (runtimeStorage.alarmEnabeld) 
+    {
+        Serial.println(F("On"));
+    } 
+    else
+    {
+        Serial.println(F("Off"));
+    }
     
     Serial.flush();
 }
 
-int serialGetInt()
+int serialGetInt(bool wait)
 {
     static int incomingByte = 0;
+
+    if (wait)
+    {
+        while (!Serial.available()) 
+        {
+            delay(2); //wait for input
+        }
+    }
     
     // send data only when you receive data:
     if (Serial.available() > 0) {
