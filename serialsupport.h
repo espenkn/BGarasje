@@ -4,36 +4,6 @@
 #include "Arduino.h"
 #include "menuEnums.h"
 
-void printDebugCmds() 
-{
-    
-    Serial.println(F("CMDS:"));
-    Serial.println(F("alarm on|off"));
-    Serial.println(F("indicator on|off"));
-    Serial.println(F("debug off / exit")); //Or exit
-
-    Serial.println();
-    Serial.flush();
-
-}
-
-
-
-void printRunCmds() 
-{
-    
-    Serial.println(F("CMDS:"));
-    Serial.println(F("debug on|off"));
-    Serial.println(F("print on|off"));
-    Serial.println(F("plot on|off"));
-    Serial.println(F("threshold set|get|store|eeprom"));
-    Serial.println(F("print config"));
-    Serial.println();
-    Serial.flush();
-    
-}
-
-
 void printMenu()
 {
     Serial.print(F("\n\n"));
