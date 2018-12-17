@@ -58,5 +58,28 @@ void serialPrintConfiguration(struct eepromStore runtimeStorage, struct eepromSt
     Serial.flush();
 }
 
+int serialGetInt()
+{
+    static int incomingByte = 0;
+    
+    // send data only when you receive data:
+    if (Serial.available() > 0) {
+        // read the incoming byte:
+        incomingByte = Serial.parseInt();
+        
+        // say what you got:
+        Serial.print(F("<<: "));
+        Serial.println(incomingByte, DEC);
+        Serial.println();
+        
+        Serial.flush();
+        
+        return incomingByte;
+        
+    } 
+
+    return -1;
+}
+
 
 #endif
