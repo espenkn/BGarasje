@@ -21,11 +21,11 @@ void printMenu()
     Serial.print(MENU_PLOT_OFF, DEC);
     Serial.println(F(": Plotting Mode - Disable"));
 
-    Serial.print(MENU_THRESHOLD_SET, DEC);
-    Serial.println(F(": Threshold Set Runtime Value"));
+    Serial.print(MENU_THRESHOLD_GET, DEC);
+    Serial.println(F(": Threshold Get Runtime Value"));
     
     Serial.print(MENU_THRESHOLD_SET, DEC);
-    Serial.println(F(": Threshold Get Runtime Value"));
+    Serial.println(F(": Threshold Set Runtime Value"));
 
     
     Serial.print(MENU_THRESHOLD_EEPROM, DEC);

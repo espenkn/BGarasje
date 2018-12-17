@@ -8,7 +8,7 @@
 #include "serialsupport.h"
 #include "ParkingControl.h"
 
-#define PLOTMODE 1 
+#define PLOTMODE 1
 
 
 //debug flag
