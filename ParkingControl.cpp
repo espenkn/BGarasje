@@ -10,12 +10,12 @@ ParkingControl::ParkingControl(UltraSonicSensor* sensor)
 
 bool ParkingControl::searchForCar()
 {
-    int dist = -1;
     int delta = -1;
     int localThresholdNeg = -1; // ex. 300 - 30 = 270
     int localThresholdPos = -1; // ex. 300 + 30 = 330
    
-    int distance = movingAverageMesurments(sensor->measureDistance());
+    int distance = sensor->measureDistance()
+    int movingDistance = movingAverageMesurments(distance);
 
     if (printEnabled()) 
     {
@@ -46,7 +46,7 @@ bool ParkingControl::searchForCar()
             break;
         
         case ALGO_THRESHOLD_BASIC_MOVING:
-            return (threshold < movingAverageMesurments(distance));
+            return (threshold < movingDistance);
             break;
 
         case ALGO_THRESHOLD_SMART:
@@ -54,23 +54,25 @@ bool ParkingControl::searchForCar()
             break;
 
         case ALGO_THRESHOLD_SMART_MOVING:
-            return (threshold < movingAverageMesurments(distance) || distance > normalDistance);
+            return (threshold < movingDistance || movingDistance > normalDistance);
             break;
         
         case ALGO_DEVIATION_PERCENT:
             /// This algorithm defines a deadspace (in %) and only if sensor reports readings outside of this region we trigger alarm
-            dist = movingAverageMesurments(distance);
             delta = (dist * deviation_percent)/100;
             localThresholdNeg = dist - delta; // ex. 300 - 30 = 270
             localThresholdPos = dist + delta; // ex. 300 + 30 = 330
 
             //if dist less than min or grater than max or outside the (expected value + headroom)
-
-            return (localThresholdNeg > dist  || dist > localThresholdPos  || distance > normalDistance);
+            return (localThresholdNeg > movingDistance  || movingDistance > localThresholdPos  || movingDistance > normalDistance);
             break;
             
         
         case ALGO_DEVIATION_FIXED:
+            localThresholdNeg = movingDistance - deviation_cm;
+            localThresholdPos = movingDistance + deviation_cm;
+            //if dist less than min or grater than max or outside the (expected value + headroom)
+            return (localThresholdNeg > movingDistance  || movingDistance > localThresholdPos  || movingDistance > normalDistance);
             break;
 
         default:
