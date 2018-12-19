@@ -29,7 +29,7 @@ void Buzzer::startAlarm()
         return;
     } 
 
-    tone(this->getPin(), 800, 10000);
+    tone(this->getPin(), this->frequency, this->duration);
 
     if (this->printEnabled()) 
     {
@@ -59,6 +59,11 @@ void Buzzer::stopAlarm()
 void Buzzer::enable() 
 {    
     this->enabled = true;
+}
+
+void Buzzer::enable(bool onOff) 
+{    
+    this->enabled = onOff;
 }
 
 void Buzzer::disable() 
@@ -102,4 +107,15 @@ void Buzzer::setPrint(bool onOff)
 bool Buzzer::printEnabled() 
 {
     return this->printText;
+}
+
+
+void Buzzer::setFreqency(int freq)
+{
+    this->frequency = freq;
+}
+
+void Buzzer::setDuration(int dur)
+{
+    this->duration = dur;
 }

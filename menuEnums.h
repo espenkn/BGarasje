@@ -2,6 +2,7 @@
 #define MENU_ENUMS
 
 enum run_menu {
+    MENU_STOP_PLOT_MODE = 0,
     MENU_PRINT_ON = 1,
     MENU_PRINT_OFF,
     MENU_PLOT_ON,

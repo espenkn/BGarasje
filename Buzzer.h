@@ -13,6 +13,8 @@ class Buzzer
     bool enabled = true;
     bool valid = false;
     bool printText = true;
+    int duration = 10000;
+    int frequency = 800;
     
   public: 
    
@@ -26,10 +28,15 @@ class Buzzer
     
     void enable();
     void disable();
+
+    void enable(bool onOff);
     
     bool isEnabled();
 
     void setPrint(bool onOff);
+
+    void setFreqency(int freq);
+    void setDuration(int dur);
     
   protected:
     void registerPin();

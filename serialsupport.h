@@ -9,8 +9,12 @@ void printMenu()
     Serial.print(F("\n\n"));
     Serial.println(F("Menu:"));
 
+    Serial.print(MENU_STOP_PLOT_MODE, DEC);
+    Serial.println(F(": Stop Plot Mode Printing"));
+
     Serial.print(MENU_PRINT_ON, DEC);
     Serial.println(F(": Print Mesurments - Enable"));
+
 
     Serial.print(MENU_PRINT_OFF, DEC);
     Serial.println(F(": Print Mesurments - Disable"));

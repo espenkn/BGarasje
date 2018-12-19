@@ -8,11 +8,10 @@
 #include "serialsupport.h"
 #include "ParkingControl.h"
 
-#define PLOTMODE 1
 
-
-//debug flag
-bool printMesurments = false;
+//Always start in plot_mode 
+// Should i change tihis to eeprom? Will result in a lot of writes when toggling 
+bool plot_mode = true;
 
 UltraSonicSensor sensor(Support::pinning.TRIG_PIN, Support::pinning.ECHO_PIN);
 Indicator indicator(Support::pinning.INDICATOR_PIN);
@@ -31,52 +30,32 @@ void setup() {
 
     // Restore EEPROM storage
     restoreStorage(storage);
-
-    
     
     Serial.begin(9600); // Starts the serial communication
-    Serial.end();
-    Serial.begin(9600);
 
     // Copy storage 
     runtimeStorage = storage;
 
     // Handle bad configuration....
-    if (runtimeStorage.threshold < 1) 
-    { 
-        if (!PLOTMODE) 
-        {
-            Serial.println(F("Bad sensor calibartion. Loading default. Please run calibrate and store to eeprom.")); 
-        }
+    Support::sanitizeStorageWithDefaults(runtimeStorage, !plot_mode);
+
+    if (plot_mode) 
+    {
+        control.setPrint(true);
         
-        runtimeStorage.threshold = Support::defaultThreshold;
-    }
-
-    if (runtimeStorage.alarmEnabeld == false) 
-    { 
-        if (!PLOTMODE) 
-        {
-            Serial.println(F("Alarm is disabled"));
-        }
-    }    
-    
-    control.setThreshold(runtimeStorage.threshold);
-
-    if (!PLOTMODE) 
+    } 
+    else 
     {
         // Print current configuration on serial
         serialPrintConfiguration(runtimeStorage, storage);
         printMenu();
-
-        
-    } 
-    else
-    {
-        control.setPrint(true);
     }
     
-    Serial.flush();
-    
+    buzzer.setFreqency(runtimeStorage.alarmFrequency);
+    buzzer.setDuration(runtimeStorage.alarmDuration);
+    buzzer.enable(runtimeStorage.alarmEnabeld);
+
+    control.setThreshold(runtimeStorage.threshold);
 
 }
 
@@ -101,7 +80,7 @@ int thresholdHelper()
     Serial.println();
     Serial.print("Got value: ");
     Serial.println(newThreshold, DEC);
-    Serial.println("To SAVE to eeprom run \"threshold store\"");
+    Serial.println("Rember to store configuration to EEPROM!");
 
     return newThreshold;
 }
@@ -115,6 +94,11 @@ void runMenu(int option)
 
     switch (option) 
     {
+
+        case MENU_STOP_PLOT_MODE:
+            plot_mode = false;
+            control.setPrint(false);
+            break;
         case MENU_PRINT_ON:
             Serial.print("Start print");
             sensor.setPrint(true);
