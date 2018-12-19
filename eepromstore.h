@@ -9,6 +9,7 @@
 struct eepromStore {
     int threshold;
     int normalDistance;
+    int selectedAlgorithm;
     
     int alarmDuration;
     int alarmFrequency;

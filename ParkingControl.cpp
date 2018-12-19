@@ -10,6 +10,10 @@ ParkingControl::ParkingControl(UltraSonicSensor* sensor)
 
 bool ParkingControl::searchForCar()
 {
+    int dist = -1;
+    int delta = -1;
+    int localThresholdNeg = -1; // ex. 300 - 30 = 270
+    int localThresholdPos = -1; // ex. 300 + 30 = 330
    
     int distance = movingAverageMesurments(sensor->measureDistance());
 
@@ -48,12 +52,26 @@ bool ParkingControl::searchForCar()
         case ALGO_THRESHOLD_SMART:
             return (threshold < distance || distance > normalDistance);
             break;
+
+        case ALGO_THRESHOLD_SMART_MOVING:
+            return (threshold < movingAverageMesurments(distance) || distance > normalDistance);
+            break;
         
         case ALGO_DEVIATION_PERCENT:
+            /// This algorithm defines a deadspace (in %) and only if sensor reports readings outside of this region we trigger alarm
+            dist = movingAverageMesurments(distance);
+            delta = (dist * deviation_percent)/100;
+            localThresholdNeg = dist - delta; // ex. 300 - 30 = 270
+            localThresholdPos = dist + delta; // ex. 300 + 30 = 330
+
+            //if dist less than min or grater than max or outside the (expected value + headroom)
+
+            return (localThresholdNeg > dist  || dist > localThresholdPos  || distance > normalDistance);
+            break;
             
         
         case ALGO_DEVIATION_FIXED:
-            
+            break;
 
         default:
             //Bad algo
@@ -173,6 +191,35 @@ void ParkingControl::setPrint(bool onOff)
 bool ParkingControl::printEnabled() 
 {
     return this->print;
+}
+
+
+void ParkingControl::printAlgorithms()
+{
+
+    Serial.print(F("\n\n"));
+    Serial.println(F("Algorithms:"));
+
+    Serial.print(ALGO_THRESHOLD_BASIC, DEC);
+    Serial.println(F(": Basic Threshold"));
+
+    Serial.print(ALGO_THRESHOLD_BASIC_MOVING, DEC);
+    Serial.println(F(": Basic Threshold With Moving Average"));
+
+    Serial.print(ALGO_THRESHOLD_SMART, DEC);
+    Serial.println(F(": Smart Threshold"));
+
+    Serial.print(ALGO_THRESHOLD_SMART_MOVING, DEC);
+    Serial.println(F(": Smart Threshold With Moving Average"));
+
+    Serial.print(ALGO_DEVIATION_PERCENT, DEC);
+    Serial.println(F(": Deviation Algorithm In Percent"));
+
+    Serial.print(ALGO_DEVIATION_FIXED, DEC);
+    Serial.println(F(": Deviation Algorithm In Fixed CM's"));
+
+  
+    Serial.flush();
 }
 
 /*

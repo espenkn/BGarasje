@@ -71,6 +71,9 @@ void printServiceMenu()
     Serial.print(MENU_SERVICE_CLEAR_EEPROM, DEC);
     Serial.println(F(": Clear EEPROM"));
 
+    Serial.print(MENU_SERVICE_CHANGE_ALGO, DEC);
+    Serial.println(F(": Change Algorithm"));
+
     Serial.flush();
 }
 

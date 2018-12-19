@@ -162,6 +162,7 @@ void runMenu(int option)
 int serviceMenu()
 {
 
+    int selection = -1;
       //Wait for input 
     for (;;) 
     {
@@ -202,10 +203,27 @@ int serviceMenu()
             restoreStorage(storage);
             break;
 
+        case MENU_SERVICE_CHANGE_ALGO:
+            //Print posible algos:
+
+            Serial.println(F("Input Algo: "));
+            selection = serialGetInt(true);
+
+            if (selection > 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) //valid 
+            {
+                runtimeStorage.selectedAlgorithm = selection;
+            }
+            else 
+            {
+                Serial.println(F("Invalid Selection, Try agin"));
+            }
+            
+            break;
+
         default:
             Serial.println(F("Unrecognized command"));
             printServiceMenu();
-
+            break;
 
     }
 
