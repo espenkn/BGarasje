@@ -237,6 +237,7 @@ int serviceMenu()
             }
 
             break;
+
         case MENU_SERVICE_SET_ALARM_DURATION:
             Serial.println(F("Input Duration in ms: "));
             selection = serialGetInt(true);
@@ -248,6 +249,21 @@ int serviceMenu()
             {
                 runtimeStorage.alarmDuration = selection;
                 Serial.println(F("Valid Duration! Rember to store to EEPROM!"));
+            }
+
+            break;
+            
+        case MENU_SERVICE_SET_NORMAL_DISTANCE:
+            Serial.println(F("Input Normal Distance in cm's: "));
+            selection = serialGetInt(true);
+            if (selection < 0)
+            {
+                Serial.println(F("Invalid Distance, Try Again"));
+            }
+            else
+            {
+                runtimeStorage.normalDistance = selection;
+                Serial.println(F("Valid Distance! Rember to store to EEPROM!"));
             }
 
             break;
