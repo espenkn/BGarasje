@@ -13,7 +13,7 @@ class Buzzer
     bool enabled = true;
     bool valid = false;
     bool printText = true;
-    int duration = 10000;
+    int duration = 2000; //2 sec (higher is better but annoying when testing)
     int frequency = 800;
     
   public: 

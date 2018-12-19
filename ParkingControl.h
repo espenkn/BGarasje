@@ -67,6 +67,7 @@ class ParkingControl
     bool printEnabled();
 
     bool setAlgorithm(int algo);
+    void setNormalDistance(int dist);
 
   protected:
     int algoThresholdBasic(int mesurment);

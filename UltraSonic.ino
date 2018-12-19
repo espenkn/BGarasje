@@ -35,7 +35,7 @@ void setup() {
     
     Serial.begin(9600); // Starts the serial communication
 
-    // Copy storage 
+    // Copy storage to runtime
     runtimeStorage = storage;
 
     // Handle bad configuration....
@@ -214,6 +214,7 @@ int serviceMenu()
             if (control.setAlgorithm(selection)) //valid 
             {
                 runtimeStorage.selectedAlgorithm = selection;
+                control.setAlgorithm(runtimeStorage.selectedAlgorithm);
                 Serial.println(F("Valid Algorithm! Rember to store to EEPROM!"));
             }
             else 
@@ -233,6 +234,7 @@ int serviceMenu()
             else
             {
                 runtimeStorage.alarmFrequency = selection;
+                buzzer.setFreqency(runtimeStorage.alarmFrequency);
                 Serial.println(F("Valid Frequency! Rember to store to EEPROM!"));
             }
 
@@ -248,11 +250,12 @@ int serviceMenu()
             else
             {
                 runtimeStorage.alarmDuration = selection;
+                buzzer.setDuration(runtimeStorage.alarmDuration);
                 Serial.println(F("Valid Duration! Rember to store to EEPROM!"));
             }
 
             break;
-            
+
         case MENU_SERVICE_SET_NORMAL_DISTANCE:
             Serial.println(F("Input Normal Distance in cm's: "));
             selection = serialGetInt(true);
@@ -263,6 +266,7 @@ int serviceMenu()
             else
             {
                 runtimeStorage.normalDistance = selection;
+                control.setNormalDistance(runtimeStorage.normalDistance);
                 Serial.println(F("Valid Distance! Rember to store to EEPROM!"));
             }
 

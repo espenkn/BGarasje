@@ -10,7 +10,7 @@ class Support
         static const int defaultThreshold = 200;
         static const bool defaultAlarmSetting = false;
         static const int defaultAlarmFrequency = 800;
-        static const int defaultAlarmDuration = 10;
+        static const int defaultAlarmDuration = 2000; //2 Sec
         static const int defaultNormalDistance = 200;
         static const int defaultHeadroom = 100;
 

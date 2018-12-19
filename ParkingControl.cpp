@@ -85,6 +85,11 @@ bool ParkingControl::searchForCar()
 
 }
 
+void ParkingControl::setNormalDistance(int dist)
+{
+    this->normalDistance = dist;
+}
+
 int ParkingControl::movingAverageMesurments(int mesurment)
 {
 
