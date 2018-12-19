@@ -14,8 +14,8 @@ bool ParkingControl::searchForCar()
     int localThresholdNeg = -1; // ex. 300 - 30 = 270
     int localThresholdPos = -1; // ex. 300 + 30 = 330
    
-    int distance = sensor->measureDistance()
-    int movingDistance = movingAverageMesurments(distance);
+    int distance = sensor->measureDistance();
+    int movingAverageDistance = movingAverageMesurments(distance);
 
     if (printEnabled()) 
     {
@@ -46,33 +46,33 @@ bool ParkingControl::searchForCar()
             break;
         
         case ALGO_THRESHOLD_BASIC_MOVING:
-            return (threshold < movingDistance);
+            return (threshold < movingAverageDistance);
             break;
 
         case ALGO_THRESHOLD_SMART:
-            return (threshold < distance || distance > normalDistance);
+            return (threshold < movingAverageDistance || distance > movingAverageDistance);
             break;
 
         case ALGO_THRESHOLD_SMART_MOVING:
-            return (threshold < movingDistance || movingDistance > normalDistance);
+            return (threshold < movingAverageDistance || movingAverageDistance > normalDistance);
             break;
         
         case ALGO_DEVIATION_PERCENT:
             /// This algorithm defines a deadspace (in %) and only if sensor reports readings outside of this region we trigger alarm
-            delta = (dist * deviation_percent)/100;
-            localThresholdNeg = dist - delta; // ex. 300 - 30 = 270
-            localThresholdPos = dist + delta; // ex. 300 + 30 = 330
+            delta = (movingAverageDistance * deviation_percent)/100;
+            localThresholdNeg = movingAverageDistance - delta; // ex. 300 - 30 = 270
+            localThresholdPos = movingAverageDistance + delta; // ex. 300 + 30 = 330
 
             //if dist less than min or grater than max or outside the (expected value + headroom)
-            return (localThresholdNeg > movingDistance  || movingDistance > localThresholdPos  || movingDistance > normalDistance);
+            return (localThresholdNeg > movingAverageDistance  || movingAverageDistance > localThresholdPos  || movingAverageDistance > normalDistance);
             break;
             
         
         case ALGO_DEVIATION_FIXED:
-            localThresholdNeg = movingDistance - deviation_cm;
-            localThresholdPos = movingDistance + deviation_cm;
+            localThresholdNeg = movingAverageDistance - deviation_cm;
+            localThresholdPos = movingAverageDistance + deviation_cm;
             //if dist less than min or grater than max or outside the (expected value + headroom)
-            return (localThresholdNeg > movingDistance  || movingDistance > localThresholdPos  || movingDistance > normalDistance);
+            return (localThresholdNeg > movingAverageDistance  || movingAverageDistance > localThresholdPos  || movingAverageDistance > normalDistance);
             break;
 
         default:
@@ -198,7 +198,7 @@ bool ParkingControl::printEnabled()
 
 bool ParkingControl::setAlgorithm(int algo)
 {
-    if (algo >= 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) 
+    if (algo >= 0 || algo < ParkingControl::ALGO_LAST_NOT_APPLICABLE) 
     {
         this->activeAlgorith = algo;
         return true;

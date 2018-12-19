@@ -218,9 +218,38 @@ int serviceMenu()
             }
             else 
             {
-                Serial.println(F("Invalid Selection, Try agin"));
+                Serial.println(F("Invalid Selection, Try Again"));
             }
             
+            break;
+
+        case MENU_SERVICE_SET_ALARM_FREQUENCY:
+            Serial.println(F("Input Frequency: "));
+            selection = serialGetInt(true);
+            if (selection < 0)
+            {
+                Serial.println(F("Invalid Frequency, Try Again"));
+            }
+            else
+            {
+                runtimeStorage.alarmFrequency = selection;
+                Serial.println(F("Valid Frequency! Rember to store to EEPROM!"));
+            }
+
+            break;
+        case MENU_SERVICE_SET_ALARM_DURATION:
+            Serial.println(F("Input Duration in ms: "));
+            selection = serialGetInt(true);
+            if (selection < 0)
+            {
+                Serial.println(F("Invalid Duration, Try Again"));
+            }
+            else
+            {
+                runtimeStorage.alarmDuration = selection;
+                Serial.println(F("Valid Duration! Rember to store to EEPROM!"));
+            }
+
             break;
 
         default:
