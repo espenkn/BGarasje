@@ -244,10 +244,10 @@ void plotPrint(bool on)
     } 
     else
     {
-        //1. silience all modules that print
+        //1. unsilience all modules that print
         indicator.setPrint(true);
         buzzer.setPrint(true);
-        //2. Enable mesurment serialPrintConfiguration
+        //2. disable mesurment serialPrintConfiguration
         sensor.setPrint(false);
     }
     
