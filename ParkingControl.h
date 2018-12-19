@@ -66,6 +66,8 @@ class ParkingControl
     void setPrint(bool on);
     bool printEnabled();
 
+    bool setAlgorithm(int algo);
+
   protected:
     int algoThresholdBasic(int mesurment);
     int algoThresholdSmart(int mesurment);

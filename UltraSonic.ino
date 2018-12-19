@@ -9,21 +9,23 @@
 #include "ParkingControl.h"
 
 
-//Always start in plot_mode 
-// Should i change tihis to eeprom? Will result in a lot of writes when toggling 
+//SINCE ARDUINO UNO ALWAYS RESETS ON "Serial Request", Always start in plot mode
+/// Variable only for debugg purpouses
 bool plot_mode = true;
 
+//Create static instances of classes
 UltraSonicSensor sensor(Support::pinning.TRIG_PIN, Support::pinning.ECHO_PIN);
 Indicator indicator(Support::pinning.INDICATOR_PIN);
 Buzzer buzzer(Support::pinning.BUZZER_PIN);
 ParkingControl control(&sensor);
 
 
-
+//Alocate storage 
 struct eepromStore storage;
 struct eepromStore runtimeStorage;
 
-///Tweek or remove?
+///Tweek this!
+// MIN "10" for sensor stability (determined by testing)
 #define LOOPDELAY 10
 
 void setup() {
@@ -56,7 +58,7 @@ void setup() {
     buzzer.enable(runtimeStorage.alarmEnabeld);
 
     control.setThreshold(runtimeStorage.threshold);
-
+    control.setAlgorithm(runtimeStorage.selectedAlgorithm);
 }
 
 void loop() {
@@ -209,7 +211,7 @@ int serviceMenu()
             Serial.println(F("Input Algo: "));
             selection = serialGetInt(true);
 
-            if (selection >= 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) //valid 
+            if (control.setAlgorithm(selection)) //valid 
             {
                 runtimeStorage.selectedAlgorithm = selection;
                 Serial.println(F("Valid Algorithm! Rember to store to EEPROM!"));

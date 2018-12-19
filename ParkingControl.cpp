@@ -196,6 +196,18 @@ bool ParkingControl::printEnabled()
 }
 
 
+bool ParkingControl::setAlgorithm(int algo)
+{
+    if (algo >= 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) 
+    {
+        this->activeAlgorith = algo;
+        return true;
+    }
+
+    return false;
+    
+}
+
 void ParkingControl::printAlgorithms()
 {
 
@@ -223,6 +235,8 @@ void ParkingControl::printAlgorithms()
   
     Serial.flush();
 }
+
+
 
 /*
 void ParkingControl::checkForCar() 
