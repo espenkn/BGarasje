@@ -209,9 +209,10 @@ int serviceMenu()
             Serial.println(F("Input Algo: "));
             selection = serialGetInt(true);
 
-            if (selection > 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) //valid 
+            if (selection >= 0 || selection < ParkingControl::ALGO_LAST_NOT_APPLICABLE) //valid 
             {
                 runtimeStorage.selectedAlgorithm = selection;
+                Serial.println(F("Valid Algorithm! Rember to store to EEPROM!"));
             }
             else 
             {
