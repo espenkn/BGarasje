@@ -85,9 +85,16 @@ bool ParkingControl::searchForCar()
 
 }
 
-void ParkingControl::setNormalDistance(int dist)
+bool ParkingControl::setNormalDistance(int dist)
 {
-    this->normalDistance = dist;
+    
+    if (dist >= 0) 
+    {
+        this->normalDistance = dist;
+        return true;
+    }
+    
+    return false;
 }
 
 int ParkingControl::movingAverageMesurments(int mesurment)
@@ -184,11 +191,6 @@ void ParkingControl::setThreshold(int threshold)
     this->threshold = threshold;
 }
 
-void ParkingControl::changeAlgorithm(int algo)
-{
-    activeAlgorith = algo;
-}
-
 
 void ParkingControl::setPrint(bool onOff) 
 {
@@ -212,6 +214,37 @@ bool ParkingControl::setAlgorithm(int algo)
     return false;
     
 }
+
+bool ParkingControl::setDeviationCm(int cmDeviation)
+{
+    if (cmDeviation >= 0) 
+    {
+        this->deviation_cm = cmDeviation;
+        return true;
+    }
+    return false;
+}
+
+bool ParkingControl::setDeviationPercent(int percentDeviation)
+{
+    if (percentDeviation >= 0) 
+    {
+        this->deviation_percent = percentDeviation;
+        return true;
+    }
+    return false;
+}
+
+bool ParkingControl::setHeadRoom(int headRoom)
+{
+    if (headRoom >= 0) 
+    {
+        this->headRoom = headRoom;
+        return true;
+    }
+    return false;
+}
+
 
 void ParkingControl::printAlgorithms()
 {

@@ -7,9 +7,12 @@
 #include <EEPROM.h>
 
 struct eepromStore {
+    int selectedAlgorithm;
+    
     int threshold;
     int normalDistance;
-    int selectedAlgorithm;
+    int thresholdPercent;
+    int thresholdDistanceCm;
     
     int alarmDuration;
     int alarmFrequency;

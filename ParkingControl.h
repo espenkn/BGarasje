@@ -61,13 +61,16 @@ class ParkingControl
 
     bool searchForCar();
     void setThreshold(int threshold);
-    void changeAlgorithm(int algo);
 
     void setPrint(bool on);
     bool printEnabled();
 
     bool setAlgorithm(int algo);
-    void setNormalDistance(int dist);
+
+    bool setNormalDistance(int dist);
+    bool setDeviationCm(int cmDeviation);
+    bool setDeviationPercent(int percentDeviation);
+    bool setHeadRoom(int headRoom);
 
   protected:
     int algoThresholdBasic(int mesurment);

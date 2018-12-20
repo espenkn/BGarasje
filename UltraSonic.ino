@@ -256,6 +256,39 @@ int serviceMenu()
 
             break;
 
+        case MENU_SERVICE_SET_DEVIATION_PERCENT:
+            Serial.println(F("Input Deviation in %: "));
+            selection = serialGetInt(true);
+            if (selection < 0)
+            {
+                Serial.println(F("Invalid Deviation, Try Again"));
+            }
+            else
+            {
+                runtimeStorage.thresholdPercent = selection;
+                control.setDeviationPercent(runtimeStorage.thresholdPercent);
+                Serial.println(F("Valid Deviation! Rember to store to EEPROM!"));
+            }
+
+            break;
+
+        case MENU_SERVICE_SET_DEVIATION_CENTIMETERS:
+            Serial.println(F("Input Deviation in cm's: "));
+            selection = serialGetInt(true);
+            if (selection < 0)
+            {
+                Serial.println(F("Invalid Deviation, Try Again"));
+            }
+            else
+            {
+                runtimeStorage.thresholdDistanceCm = selection;
+                control.setDeviationCm(runtimeStorage.thresholdDistanceCm);
+                Serial.println(F("Valid Deviation! Rember to store to EEPROM!"));
+            }
+
+            break;
+
+
         case MENU_SERVICE_SET_NORMAL_DISTANCE:
             Serial.println(F("Input Normal Distance in cm's: "));
             selection = serialGetInt(true);
